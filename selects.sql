@@ -1,3 +1,34 @@
+--название и продолжительность самого длительного трека
+
+select track_name , duration_seconds 
+from tracks
+order by duration_seconds desc 
+limit 1;
+
+--название треков, продолжительность которых не менее 3,5 минут
+
+select track_name 
+from tracks t 
+where duration_seconds >= 210;
+
+--названия сборников, вышедших в период с 2018 по 2020 год включительно
+
+select collection_name 
+from collections c 
+where release_year between 2018 and 2020;
+
+--исполнители, чьё имя состоит из одного слова
+
+select artist_name
+from artists a 
+where artist_name not like '% %' and artist_name not like '%-%';
+
+--название треков, которые содержат слово «мой» или «my»
+
+select track_name 
+from tracks t 
+where track_name ilike '%my%' or track_name ilike '%мой%';
+
 --количество исполнителей в каждом жанре
 
 select g.genre_name , count(ag.artist_id) as cnt
@@ -25,13 +56,16 @@ group by a.album_id;
 
 --все исполнители, которые не выпустили альбомы в 2020 году
 
-select distinct a.artist_name 
+select artist_name
 from artists a 
-	join artists_albums aa 
-		on a.artist_id = aa.artist_album_id 
-	join albums a2 
-		on aa.album_id = a2.album_id 
-where a2.release_year = 2020;
+where artist_name not in (
+							select distinct a.artist_name 
+							from artists a 
+								join artists_albums aa 
+									on a.artist_id = aa.artist_id 
+								join albums a2 
+									on aa.album_id = a2.album_id 
+							where a2.release_year = 2020);
 
 
 --названия сборников, в которых присутствует конкретный исполнитель (выберите его сами)
