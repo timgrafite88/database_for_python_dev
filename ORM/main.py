@@ -19,11 +19,7 @@ publ = input('Введите Фамилию писателя: ')
 subq = session.query(Publisher).filter(Publisher.name == publ).all()
 
 stmnt = (
-    select(
-        #Book.title,Shop.name, Sale.price, Sale.date_sale
-        Sale
-        )
-#    .select(Shop)
+    select(Book.title, Shop.name, Sale.price, Sale.date_sale)
     .join(Stock, Sale.id_stock == Stock.id)
     .join(Shop, Stock.id_shop == Shop.id)
     .join(Book, Book.id == Stock.id_book)
@@ -31,7 +27,12 @@ stmnt = (
     .where(Publisher.name == publ)
 )
 
-for i in session.scalars(stmnt):
-    print(i)
+results = session.execute(stmnt).fetchall()
+
+if results:
+    for title, shop_name, price, date_sale in results:
+        print(f'{title} | {shop_name} | {price} | {date_sale}')
+else:
+    print('Нет записей о продажах для указанного издателя.')
 
 session.close()
